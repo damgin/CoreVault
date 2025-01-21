@@ -1,3 +1,5 @@
+![alt text](image-1.png)
+
 # CoreVault
 CoreVault est un serveur de stockage en ligne coder dans le cadre d'un projet encadré par LaPlatforme.io
 
@@ -5,6 +7,7 @@ CoreVault est un serveur de stockage en ligne coder dans le cadre d'un projet en
 
 Comment on s'en sert (use case)
 De quoi c'est fait (stack)
+![alt text](image-2.png)
 Comment ça marche
 Logiramme client
 logiramme server
