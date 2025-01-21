@@ -1,6 +1,6 @@
 ![alt text](image-1.png)
 
-                      # CoreVault
+# CoreVault
 CoreVault est un serveur de stockage en ligne coder dans le cadre d'un projet encadré par LaPlatforme.io
 
 ![alt text](image.png)
