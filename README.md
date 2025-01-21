@@ -1,6 +1,7 @@
 # CoreVault
 CoreVault est un serveur de stockage en ligne coder dans le cadre d'un projet encadré par LaPlatforme.io
 
+![alt text](image.png)
 
 Comment on s'en sert (use case)
 De quoi c'est fait (stack)
