@@ -5,22 +5,24 @@
 #include <dirent.h>
 
 int main(){
+   /// fonctionne aussi : DIR * test = opendir("tests");
     
-    DIR *dir_ptr;
+    int *test;
+    // int test;
 
-    struct dirent *read_dir;
+    struct dirent *lecteur_dossier;
+    test = opendir("tests");
 
-    dir_ptr = opendir("tests");
 
-    if (dir_ptr == 0) {perror("impossible d'ouvrir le dossier\n"); return 1;}
+    if (test == 0) {perror("impossible d'ouvrir le dossier\n"); return 1;}
 
-    while ((read_dir = readdir(dir_ptr)) !=0){
+    while ((lecteur_dossier = readdir(test)) !=0){
 
-        if (read_dir -> d_type == DT_REG) { printf("FILE : %s\n",read_dir->d_name); }
-        else if (read_dir -> d_type == DT_DIR) { printf("DIR: %s\n",read_dir ->d_name);}
+        if (lecteur_dossier -> d_type == DT_REG) { printf("FILE : %s\n",lecteur_dossier->d_name); }
+        else if (lecteur_dossier -> d_type == DT_DIR) { printf("DIR: %s\n",lecteur_dossier ->d_name);}
 
     }
-    if (closedir(dir_ptr)== -1) { perror("impossible de fermer le dir\n"); return 1;}
+    if (closedir(test)== -1) { perror("impossible de fermer le dir\n"); return 1;}
 
     return 0;
 
