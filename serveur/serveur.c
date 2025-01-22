@@ -62,39 +62,35 @@ char buf[255];
     //on regarde ce que le client envoie :
     ///si c'est LIST
         if(strncmp(buf,"list",4) == 0){ 
-             char tampon[BUFFER_SIZE]; // Tampon pour capturer le printf
-        struct dirent *lecteur_dossier;
-        DIR * dir = opendir("public");
-            if (dir == 0) {perror("impossible d'ouvrir le dossier\n"); return 1;}
+            char tampon[BUFFER_SIZE]; // Tampon pour capturer le printf
+            struct dirent *lecteur_dossier;
+            DIR * dir = opendir("public");
+                if (dir == 0) {perror("impossible d'ouvrir le dossier\n"); return 1;}
 
-            while ((lecteur_dossier = readdir(dir)) !=0){
+                while ((lecteur_dossier = readdir(dir)) !=0){
 
             // Vérification du type de fichier
-        if (lecteur_dossier->d_type == DT_REG) {
-            snprintf(tampon, sizeof(tampon), "FILE: %s\n", lecteur_dossier->d_name);
-            printf("Tampon: %s", tampon); // Affichage pour débugg
-        } else if (lecteur_dossier->d_type == DT_DIR) {
-            snprintf(tampon, sizeof(tampon), "DIR: %s\n", lecteur_dossier->d_name);
-            printf("Tampon: %s", tampon); // Affichage pour débugg
-        }
+                    if (lecteur_dossier->d_type == DT_REG) {
+                        snprintf(tampon, sizeof(tampon), "FILE: %s\n", lecteur_dossier->d_name);
+                        printf("Tampon: %s", tampon); // Affichage pour débugg
+                            } else if (lecteur_dossier->d_type == DT_DIR) {
+                                snprintf(tampon, sizeof(tampon), "DIR: %s\n", lecteur_dossier->d_name);
+                                printf("Tampon: %s", tampon); // Affichage pour débugg
+                            }
 
             
-        if (send(client_fd, tampon, strlen(tampon), 0) == -1) {
-            perror("Erreur d'envoi au client");
-            break;
+            if (send(client_fd, tampon, strlen(tampon), 0) == -1) {
+                perror("Erreur d'envoi au client");
+                break;
+            }
+            }if(closedir(dir)== -1) { perror("impossible de fermer le dir\n"); return 1;}
+            // tentative d'envoie un "message fin de la liste"
+            const char *fin_liste = "FIN_LISTE\n";
+            if (send(client_fd, fin_liste, strlen(fin_liste), 0) == -1) {
+                perror("Erreur d'envoi de l'indicateur de fin au client");
+            }
         }
-
-
-    }
-
-    if (closedir(dir)== -1) { perror("impossible de fermer le dir\n"); return 1;}
-    }
-    // tentative d'envoie un "message fin de la liste"
-    const char *fin_liste = "FIN_LISTE\n";
-    if (send(client_fd, fin_liste, strlen(fin_liste), 0) == -1) {
-        perror("Erreur d'envoi de l'indicateur de fin au client");
-    }
-    return EXIT_SUCCESS;    
+            return EXIT_SUCCESS;    
 }
 
 

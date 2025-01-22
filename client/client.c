@@ -38,8 +38,14 @@ int main(){
     if(error == -1) { close(client_fd); return EXIT_FAILURE; }
 
     // SOCKET CLIENT PRET A COMMUNIQUER !
-    ///handle_client(client_fd);
-char buffer[BUFFER_SIZE];memset(buffer, 0, BUFFER_SIZE);
+
+
+
+
+
+    
+    //buffer pour stocker ma commande 
+    char buffer[BUFFER_SIZE];memset(buffer, 0, BUFFER_SIZE);
  
 
     printf("Entrez une commande (upload_<nom_du_fichier>, download_<nom_du_fichier>, list) : ");
@@ -74,36 +80,34 @@ char buffer[BUFFER_SIZE];memset(buffer, 0, BUFFER_SIZE);
 
         // Commande 'list'
         else if (strncmp(buffer, "list", 4) == 0) {
-    printf("Commande 'list' envoyée au serveur.\n");
+            printf("Commande 'list' envoyée au serveur.\n");
 
-    // Envoyer la commande 'list' au serveur
-    if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-        perror("Erreur lors de l'envoi de la commande au serveur");
-        return EXIT_FAILURE;
-    }
+    // Envoyer la string "list" au serveur
+        if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
+            perror("Erreur lors de l'envoi de la commande au serveur");
+            return EXIT_FAILURE;
+        }
 
     // Réception des données
     char buf[BUFFER_SIZE];
     ssize_t donne_recus;
     printf("Liste des fichiers et répertoires :\n");
 
-    while ((donne_recus = recv(client_fd, buf, sizeof(buf) - 1, 0)) > 0) {
-        buf[donne_recus] = '\0'; // Assurez-vous que c'est une chaîne C valide
-        printf("%s", buf);
+        while ((donne_recus = recv(client_fd, buf, sizeof(buf) - 1, 0)) > 0) {
+            buf[donne_recus] = '\0'; // Assurez-vous que c'est une chaîne C valide
+            printf("%s", buf);
 
-        // Vérifier si le serveur indique la fin de la liste
-        if (strstr(buf, "FIN_LISTE") != NULL) {
-            break; // Fin de la liste
+                // Vérifier si le serveur indique la fin de la liste
+                if (strstr(buf, "FIN_LISTE") != NULL) {
+                    break; // enfin la  fin de la liste
+                }
         }
-    }
 
-    if (donne_recus < 0) { perror("Erreur lors de la réception des données");}
+        if (donne_recus < 0) { perror("Erreur lors de la réception des données");}
 
         // en cas de couille
-} else {printf("Erreur lors de la lecture de la commande.\n");}
-
-    close(client_fd);
-
-    return EXIT_SUCCESS;
-
+        } else {printf("Erreur lors de la lecture de la commande.\n");}
+            close(client_fd);
+            return EXIT_SUCCESS;
+        }
 }
