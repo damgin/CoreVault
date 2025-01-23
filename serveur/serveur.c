@@ -127,6 +127,53 @@ char buf[255];
     return EXIT_SUCCESS;
     }
 
+
+
+
+
+
+// Si la commande commence par "upload_"
+if (strncmp(buf, "upload_", 7) == 0) {
+
+
+    char *nom_fichier = buf + 7; // Nom du fichier
+    char chemin_acces_fichier[BUFFER_SIZE];
+    snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
+
+    // Ouvrir le fichier en écriture (création ou écrasement)
+    FILE *file = fopen(chemin_acces_fichier, "wb");
+    if (!file) {
+        perror("Erreur d'ouverture du fichier pour l'upload");
+        char *erreur_msg = "ERREUR: Impossible de créer le fichier\n";
+        send(client_fd, erreur_msg, strlen(erreur_msg), 0);
+    } else {
+        char buf_fichier[BUFFER_SIZE];
+        ssize_t donne_recue;
+
+        // on recoit les octes en boucles
+        while ((donne_recue = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
+            fwrite(buf_fichier, 1, donne_recue, file);
+
+            // comme pour dwl si le client a envoyé le marqueur de fin de fichier
+            if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {
+                // On enlève "FIN_FICHIER" du contenu reçu
+                fseek(file, -strlen("FIN_FICHIER"), SEEK_CUR);
+                break;
+            }
+        }
+
+        if (donne_recue < 0) {
+            perror("Erreur lors de la réception du fichier");
+        }
+
+        fclose(file);
+        printf("Upload terminé : %s\n", chemin_acces_fichier);
+    }
+
+    close(client_fd);
+    return EXIT_SUCCESS;
+}
+
 }
 
 
