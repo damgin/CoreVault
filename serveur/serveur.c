@@ -89,9 +89,49 @@ char buf[255];
             if (send(client_fd, fin_liste, strlen(fin_liste), 0) == -1) {
                 perror("Erreur d'envoi de l'indicateur de fin au client");
             }
-        }
             return EXIT_SUCCESS;    
+        }
+        // ici on ce fait le download
+    if (strncmp(buf, "download_", 9) == 0) {
+        char *nom_fichier = buf + 9; // Nom du fichier
+        char chemin_acces_fichier[BUFFER_SIZE];
+        snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
+
+        // Ouverture du fichier en lecture
+        int file_fd = open(chemin_acces_fichier, O_RDONLY);
+        if (file_fd < 0) {
+            perror("Erreur d'ouverture du fichier");
+            char *erreur_msg = "ERREUR: Fichier introuvable\n";
+            send(client_fd, erreur_msg, strlen(erreur_msg), 0);
+        } else {
+            char buf_fichier[BUFFER_SIZE];
+            ssize_t donne_lue;
+
+            // Envoi du contenu du fichier au client
+            while ((donne_lue = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
+                if (send(client_fd, buf_fichier, donne_lue, 0) == -1) {
+                    perror("Erreur d'envoi du fichier");
+                    break;
+                }
+            }
+
+            if (donne_lue < 0) perror("Erreur de lecture du fichier");
+
+            close(file_fd);
+
+            // Indicateur de fin de fichier
+            const char *fin_transfert = "FIN_FICHIER\n";
+            send(client_fd, fin_transfert, strlen(fin_transfert), 0);
+        }
+    close(client_fd);
+    return EXIT_SUCCESS;
+    }
+
 }
+
+
+
+
 
 
    

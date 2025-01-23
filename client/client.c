@@ -56,8 +56,8 @@ int main(){
      // Vérifier si la commande commence par "upload_"
         if (strncmp(buffer, "upload_", 7) == 0) {
             // Récupérer le nom du fichier après "upload_"
-            char *filename = buffer + 7;
-            printf("Commande 'upload' avec fichier: %s\n", filename);
+            char *nom_fichier = buffer + 7;
+            printf("Commande 'upload' avec fichier: %s\n", nom_fichier);
             // Envoyer la commande au serveur avec le nom du fichier
             if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
                 perror("Erreur lors de l'envoi de la commande au serveur");
@@ -66,16 +66,48 @@ int main(){
         }
 
         // Vérifier si la commande commence par "download_"
-        else if (strncmp(buffer, "download_", 9) == 0) {
-            // Récupérer le nom du fichier après "download_"
-            char *filename = buffer + 9;
-            printf("Commande 'download' avec fichier: %s\n", filename);
-            // Envoyer la commande au serveur avec le nom du fichier
-            if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-                perror("Erreur lors de l'envoi de la commande au serveur");
-               
-            }
+else if (strncmp(buffer, "download_", 9) == 0) {
+    char *nom_fichier = buffer + 9;
+    printf("Commande 'download' avec fichier: %s\n", nom_fichier);
+
+    if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
+        perror("Erreur lors de l'envoi de la commande au serveur");
+    }
+
+    // Réception des données
+    char buf_fichier[BUFFER_SIZE];
+    ssize_t donne_recus;
+
+    // Ouvrir un fichier local pour écrire les données reçues
+    FILE *file = fopen(nom_fichier, "wb");
+    if (!file) {
+        perror("Erreur d'ouverture du fichier local");
+        close(client_fd);
+        return EXIT_FAILURE;
+    }
+
+    printf("Téléchargement du fichier : %s\n", nom_fichier);
+
+    while ((donne_recus = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
+        // Vérifier la fin du fichier
+
+        //Strstr renvoie un pointeur sur le début de la sous chaine ou 0 si il la trouve pas, bonne chance pour coder ca
+        if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {   ///si je trouve pas la sous chaine je continue a fwrite ! gg :!
+            //urgent trouver comment suprimer le marquer 
+            fwrite(buf_fichier, 1, donne_recus - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
+            break;
         }
+
+        fwrite(buf_fichier, 1, donne_recus, file);
+    }
+
+    if (donne_recus < 0) {
+        perror("Erreur lors de la réception du fichier");
+    }
+
+    fclose(file);
+    printf("Téléchargement terminé.\n");
+}
 
 
         // Commande 'list'
