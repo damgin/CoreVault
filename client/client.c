@@ -39,9 +39,27 @@ int main(){
 
     // SOCKET CLIENT PRET A COMMUNIQUER !
 
-
-
-
+printf("\n"
+"\n"
+"\n"
+"\n");
+printf(
+        "   ██████╗  ██████╗ ██████╗ ███████╗    ██╗   ██╗ █████╗ ██╗   ██╗██╗     ████████╗\n"
+        "  ██╔════╝ ██╔═══██╗██╔══██╗██╔════╝    ██║   ██║██╔══██╗██║   ██║██║     ╚══██╔══╝\n"
+        "  ██║      ██║   ██║██████╔╝█████╗      ██║   ██║███████║██║   ██║██║        ██║   \n"
+        "  ██║      ██║   ██║██╔██   ██╔══╝      ██║   ██║██╔══██║██║   ██║██║        ██║   \n"
+        "  ╚██████  ╚██████╔╝██║ ██  ███████╗    ╚██████╔╝██║  ██║╚██████╔╝███████╗   ██║   \n"
+        "   ╚═════╝  ╚═════╝ ╚═╝ ╚═╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   \n"
+        "\n"
+        "  Bienvenue sur Core Vault - Votre plateforme sécurisée de stockage en ligne.\n"
+        "\n"
+        "  [1] Créer un compte\n"
+        "  [2] Se connecter\n"
+        "  [3] À propos\n"
+        "  [4] Quitter\n"
+        "\n"
+        "  Veuillez saisir votre choix : "
+    );
 
     
     //buffer pour stocker ma commande 
