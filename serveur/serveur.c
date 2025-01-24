@@ -140,7 +140,7 @@ if (strncmp(buf, "upload_", 7) == 0) {
     char chemin_acces_fichier[BUFFER_SIZE];
     snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
 
-    // Ouvrir le fichier en écriture (création ou écrasement)
+    // Ouvrir le fichier en écriture (crée ou écrasement)
     FILE *file = fopen(chemin_acces_fichier, "wb");
     if (!file) {
         perror("Erreur d'ouverture du fichier pour l'upload");
@@ -150,7 +150,7 @@ if (strncmp(buf, "upload_", 7) == 0) {
         char buf_fichier[BUFFER_SIZE];
         ssize_t donne_recue;
 
-        // on recoit les octes en boucles
+        // on recoit les oct en boucles
         while ((donne_recue = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
             fwrite(buf_fichier, 1, donne_recue, file);
 
