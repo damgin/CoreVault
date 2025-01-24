@@ -54,16 +54,53 @@ int main(){
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
      // Vérifier si la commande commence par "upload_"
-        if (strncmp(buffer, "upload_", 7) == 0) {
-            // Récupérer le nom du fichier après "upload_"
-            char *nom_fichier = buffer + 7;
-            printf("Commande 'upload' avec fichier: %s\n", nom_fichier);
-            // Envoyer la commande au serveur avec le nom du fichier
-            if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-                perror("Erreur lors de l'envoi de la commande au serveur");
-                
-            }
+if (strncmp(buffer, "upload_", 7) == 0) {
+    // Récupérer le nom du fichier après "upload_"
+    char *nom_fichier = buffer + 7;
+    printf("Commande 'upload' avec fichier: %s\n", nom_fichier);
+    // Envoyer la commande au serveur avec le nom du fichier
+    if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
+        perror("Erreur lors de l'envoi de la commande au serveur");
+    }
+
+    // Ouvrir le fichier local pour le lire
+    FILE *file = fopen(nom_fichier, "rb");
+    if (!file) {
+        perror("Erreur d'ouverture du fichier local");
+        close(client_fd);
+        return EXIT_FAILURE;
+    }
+
+    // Buffer pour lire les données du fichier
+    char buf_fichier[BUFFER_SIZE];
+    ssize_t taille_lue;
+
+    printf("Téléchargement du fichier : %s\n", nom_fichier);
+
+    // Lire et envoyer le fichier en morceaux
+    while ((taille_lue = fread(buf_fichier, 1, sizeof(buf_fichier), file)) > 0) {
+        if (send(client_fd, buf_fichier, taille_lue, 0) == -1) {
+            perror("Erreur lors de l'envoi du fichier au serveur");
+            fclose(file);
+            close(client_fd);
+            return EXIT_FAILURE;
         }
+    }
+
+    if (taille_lue < 0) {
+        perror("Erreur lors de la lecture du fichier");
+    }
+
+    // Indicateur de fin de fichier
+    const char *fin_transfert = "FIN_FICHIER\n";
+    if (send(client_fd, fin_transfert, strlen(fin_transfert), 0) == -1) {
+        perror("Erreur lors de l'envoi de l'indicateur de fin de fichier au serveur");
+    }
+
+    fclose(file);
+    printf("Upload terminé.\n");
+}
+
 
         // Vérifier si la commande commence par "download_"
 else if (strncmp(buffer, "download_", 9) == 0) {
