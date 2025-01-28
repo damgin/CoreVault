@@ -150,7 +150,7 @@ char buf[255];
 
 
 
-// Si la commande commence par "upload_" // WORK IN PROGRESS
+// Si la commande commence par "upload_"
 if (strncmp(buf, "upload_", 7) == 0) {
 
 
@@ -191,6 +191,9 @@ if (strncmp(buf, "upload_", 7) == 0) {
     close(client_fd);
     return EXIT_SUCCESS;
 }
+
+
+
 
 }
 
