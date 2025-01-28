@@ -72,7 +72,7 @@ printf(
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
      // Vérifier si la commande commence par "upload_"
-if (strncmp(buffer, "upload_", 7) == 0) {
+if (strncmp(buffer, "upload_", 7) == 0) {///  WORK IN PROGRESS
     // Récupérer le nom du fichier après "upload_"
     char *nom_fichier = buffer + 7;
     printf("Commande 'upload' avec fichier: %s\n", nom_fichier);
@@ -129,7 +129,7 @@ else if (strncmp(buffer, "download_", 9) == 0) {
         perror("Erreur lors de l'envoi de la commande au serveur");
     }
 
-    // Réception des données
+    // Réception des données de la part du serveur.
     char buf_fichier[BUFFER_SIZE];
     ssize_t donne_recus;
 
@@ -142,7 +142,7 @@ else if (strncmp(buffer, "download_", 9) == 0) {
     }
 
     printf("Téléchargement du fichier : %s\n", nom_fichier);
-
+    // char* donner_total = recv (donne_lue)
     while ((donne_recus = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
         // Vérifier la fin du fichier
 
@@ -185,7 +185,7 @@ else if (strncmp(buffer, "download_", 9) == 0) {
             printf("%s", buf);
 
                 // Vérifier si le serveur indique la fin de la liste
-                if (strstr(buf, "FIN_LISTE") != NULL) {
+                if (strstr(buf, "FIN_LISTE") != NULL) {//// aregarder 
                     break; // enfin la  fin de la liste
                 }
         }

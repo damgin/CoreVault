@@ -2,7 +2,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define CLIENT_PORT 8010
+#define CLIENT_PORT 8012
 #define SERVER_PORT 3010
 
 #define GLOBAL_H
@@ -20,7 +20,7 @@
 #include <sys/stat.h> // Pour les fichiers
 #include "fonction.c"
 
-///#define chemin_coffre "./?????????/"
+
 
 
 ////#endif /// a voir avec massi, nouvelle facon d'include 1 seule fois global.h

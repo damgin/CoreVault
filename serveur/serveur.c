@@ -60,6 +60,13 @@ char buf[255];
     if(data_recus < 0){perror("erreur de receptions des données, c con :/");close(client_fd);}
 
     //on regarde ce que le client envoie :
+    
+    
+    
+    
+    
+    
+    
     ///si c'est LIST
         if(strncmp(buf,"list",4) == 0){ 
             char tampon[BUFFER_SIZE]; // Tampon pour capturer le printf
@@ -91,31 +98,42 @@ char buf[255];
             }
             return EXIT_SUCCESS;    
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // ici on ce fait le download
     if (strncmp(buf, "download_", 9) == 0) {
         char *nom_fichier = buf + 9; // Nom du fichier
         char chemin_acces_fichier[BUFFER_SIZE];
         snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
 
-        // Ouverture du fichier en lecture
-        int file_fd = open(chemin_acces_fichier, O_RDONLY);
+        // Ouverture du fichier en lecture       O_RDONLY = lecteur seul
+        int file_fd = open(chemin_acces_fichier, O_RDONLY); //pour lire mon char. open renvoie un descripteur de fichier.
         if (file_fd < 0) {
             perror("Erreur d'ouverture du fichier");
             char *erreur_msg = "ERREUR: Fichier introuvable\n";
             send(client_fd, erreur_msg, strlen(erreur_msg), 0);
         } else {
             char buf_fichier[BUFFER_SIZE];
-            ssize_t donne_lue;
-
+            ssize_t donnees_lues;
+        
             // Envoi du contenu du fichier au client
-            while ((donne_lue = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
-                if (send(client_fd, buf_fichier, donne_lue, 0) == -1) {
+            while ((donnees_lues = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
+            
+                if (send(client_fd, buf_fichier, donnees_lues, 0) == -1) {
                     perror("Erreur d'envoi du fichier");
                     break;
                 }
             }
 
-            if (donne_lue < 0) perror("Erreur de lecture du fichier");
+            if (donnees_lues < 0) perror("Erreur de lecture du fichier");
 
             close(file_fd);
 
@@ -132,7 +150,7 @@ char buf[255];
 
 
 
-// Si la commande commence par "upload_"
+// Si la commande commence par "upload_" // WORK IN PROGRESS
 if (strncmp(buf, "upload_", 7) == 0) {
 
 
@@ -152,7 +170,6 @@ if (strncmp(buf, "upload_", 7) == 0) {
 
         // on recoit les oct en boucles
         while ((donne_recue = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
-            fwrite(buf_fichier, 1, donne_recue, file);
 
             // comme pour dwl si le client a envoyé le marqueur de fin de fichier
             if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {
@@ -160,6 +177,7 @@ if (strncmp(buf, "upload_", 7) == 0) {
                 fseek(file, -strlen("FIN_FICHIER"), SEEK_CUR);
                 break;
             }
+            fwrite(buf_fichier, 1, donne_recue, file);
         }
 
         if (donne_recue < 0) {
