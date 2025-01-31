@@ -5,7 +5,7 @@
 #define BUFSIZ 255
 
 #define CLIENT_PORT 8010
-#define SERVER_PORT 3010
+#define SERVER_PORT 3005
 
 #define GLOBAL_H
 

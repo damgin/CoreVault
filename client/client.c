@@ -72,126 +72,16 @@ printf(
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
      // Vérifier si la commande commence par "upload_"
-if (strncmp(buffer, "upload_", 7) == 0) {///  WORK IN PROGRESS
-    // Récupérer le nom du fichier après "upload_"
-    char *nom_fichier = buffer + 7;
-    printf("Commande 'upload' avec fichier: %s\n", nom_fichier);
-    // Envoyer la commande au serveur avec le nom du fichier
-    if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-        perror("Erreur lors de l'envoi de la commande au serveur");
-    }
+    if (strncmp(buffer, "upload_", 7) == 0) {upload(client_fd,buffer);}
 
-    // Ouvrir le fichier local pour le lire
-    FILE *file = fopen(nom_fichier, "rb");
-    if (!file) {
-        perror("Erreur d'ouverture du fichier local");
-        close(client_fd);
-        return EXIT_FAILURE;
-    }
-
-    // Buffer pour lire les données du fichier
-    char buf_fichier[BUFFER_SIZE];
-    ssize_t taille_lue;
-
-    printf("Téléchargement du fichier : %s\n", nom_fichier);
-
-    // Lire et envoyer le fichier en morceaux
-    while ((taille_lue = fread(buf_fichier, 1, sizeof(buf_fichier), file)) > 0) {
-        if (send(client_fd, buf_fichier, taille_lue, 0) == -1) {
-            perror("Erreur lors de l'envoi du fichier au serveur");
-            fclose(file);
-            close(client_fd);
-            return EXIT_FAILURE;
-        }
-    }
-
-    if (taille_lue < 0) {
-        perror("Erreur lors de la lecture du fichier");
-    }
-
-    // Indicateur de fin de fichier
-    const char *fin_transfert = "FIN_FICHIER\n";
-    if (send(client_fd, fin_transfert, strlen(fin_transfert), 0) == -1) {
-        perror("Erreur lors de l'envoi de l'indicateur de fin de fichier au serveur");
-    }
-
-    fclose(file);
-    printf("Upload terminé.\n");
-}
 
 
         // Vérifier si la commande commence par "download_"
-else if (strncmp(buffer, "download_", 9) == 0) {
-    char *nom_fichier = buffer + 9;
-    printf("Commande 'download' avec fichier: %s\n", nom_fichier);
-
-    if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-        perror("Erreur lors de l'envoi de la commande au serveur");
-    }
-
-    // Réception des données de la part du serveur.
-    char buf_fichier[BUFFER_SIZE];
-    ssize_t donne_recus;
-
-    // Ouvrir un fichier local pour écrire les données reçues
-    FILE *file = fopen(nom_fichier, "wb");
-    if (!file) {
-        perror("Erreur d'ouverture du fichier local");
-        close(client_fd);
-        return EXIT_FAILURE;
-    }
-
-    printf("Téléchargement du fichier : %s\n", nom_fichier);
-    // char* donner_total = recv (donne_lue)
-    while ((donne_recus = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
-        // Vérifier la fin du fichier
-
-        //Strstr renvoie un pointeur sur le début de la sous chaine ou 0 si il la trouve pas, bonne chance pour coder ca
-        if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {   ///si je trouve pas la sous chaine je continue a fwrite ! gg :!
-            //urgent trouver comment suprimer le marquer 
-            fwrite(buf_fichier, 1, donne_recus - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
-            break;
-        }
-
-        fwrite(buf_fichier, 1, donne_recus, file);
-    }
-
-    if (donne_recus < 0) {
-        perror("Erreur lors de la réception du fichier");
-    }
-
-    fclose(file);
-    printf("Téléchargement terminé.\n");
-}
+    else if (strncmp(buffer, "download_", 9) == 0) { download(client_fd,buffer);}
 
 
         // Commande 'list'
-        else if (strncmp(buffer, "list", 4) == 0) {
-            printf("Commande 'list' envoyée au serveur.\n");
-
-    // Envoyer la string "list" au serveur
-        if (send(client_fd, buffer, strlen(buffer), 0) < 0) {
-            perror("Erreur lors de l'envoi de la commande au serveur");
-            return EXIT_FAILURE;
-        }
-
-    // Réception des données
-    char buf[BUFFER_SIZE];
-    ssize_t donne_recus;
-    printf("Liste des fichiers et répertoires :\n");
-
-        while ((donne_recus = recv(client_fd, buf, sizeof(buf) - 1, 0)) > 0) {
-            buf[donne_recus] = '\0'; // Assurez-vous que c'est une chaîne C valide
-            printf("%s", buf);
-
-                // Vérifier si le serveur indique la fin de la liste
-                if (strstr(buf, "FIN_LISTE") != NULL) {//// aregarder 
-                    break; // enfin la  fin de la liste
-                }
-        }
-
-        if (donne_recus < 0) { perror("Erreur lors de la réception des données");}
-
+        else if (strncmp(buffer, "list", 4) == 0) {list(client_fd,buffer);
         // en cas de couille
         } else {printf("Erreur lors de la lecture de la commande.\n");}
             close(client_fd);
