@@ -12,7 +12,7 @@ char *file_name = user_input + 9;
     }
 
     // Réception des données de la part du serveur.
-    char buf_fichier[BUFFER_SIZE];
+    char file_buffer[BUFFER_SIZE];
     ssize_t data_recv;
 
     // Ouvrir un fichier local pour écrire les données reçues
@@ -25,16 +25,16 @@ char *file_name = user_input + 9;
 
     printf("Téléchargement du fichier : %s\n", file_name);
     // char* donner_total = recv (donne_lue)
-    while ((data_recv = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
+    while ((data_recv = recv(client_fd, file_buffer, sizeof(file_buffer), 0)) > 0) {
         // Vérifier la fin du fichier
 
         //Strstr renvoie un pointeur sur le début de la sous chaine ou 0 si il la trouve pas, bonne chance pour coder ca
-        if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {   ///si je trouve pas la sous chaine je continue a fwrite ! gg :!
-            fwrite(buf_fichier, 1, data_recv - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
+        if (strstr(file_buffer, "FIN_FICHIER") != NULL) {   ///si je trouve pas la sous chaine je continue a fwrite ! gg :!
+            fwrite(file_buffer, 1, data_recv - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
             break;
         }
 
-        fwrite(buf_fichier, 1, data_recv, file);
+        fwrite(file_buffer, 1, data_recv, file);
     }
 
     if (data_recv < 0) {
@@ -49,44 +49,35 @@ void upload(int client_fd,char*user_input){
     // Récupérer le nom du fichier après "upload_"
     char *file_name = user_input + 7;
     printf("Commande 'upload' avec fichier: %s\n", file_name);
-    // Envoyer la commande au serveur avec le nom du fichier
+
+    // Envoyer la commande au serveur
     if (send(client_fd, user_input, strlen(user_input), 0) < 0) {
         perror("Erreur lors de l'envoi de la commande au serveur");
+        return;
     }
-
-    // Ouvrir le fichier local pour le lire
+    // Ouvrir le fichier pour le lire
     FILE *file = fopen(file_name, "rb");
     if (!file) {
         perror("Erreur d'ouverture du fichier local");
-        close(client_fd);
-        return ;
+        return;
     }
 
-    // user_input pour lire les données du fichier
-    char buf_fichier[BUFFER_SIZE];
+    char file_buffer[BUFFER_SIZE];
     ssize_t data_lenght;
 
-    printf("Téléchargement du fichier : %s\n", file_name);
-
-    // Lire et envoyer le fichier en morceaux
-    while ((data_lenght = fread(buf_fichier, 1, sizeof(buf_fichier), file)) > 0) {
-        if (send(client_fd, buf_fichier, data_lenght, 0) == -1) {
+    printf("Envoi du fichier : %s\n", file_name);
+    //boucle qui lis le fichier puis le send
+    while ((data_lenght = fread(file_buffer, 1, sizeof(file_buffer), file)) > 0) {
+        if (send(client_fd, file_buffer, data_lenght, 0) == -1) {
             perror("Erreur lors de l'envoi du fichier au serveur");
             fclose(file);
-            close(client_fd);
-            return ;
+            return;
         }
     }
 
-    if (data_lenght < 0) {
-        perror("Erreur lors de la lecture du fichier");
-    }
-
-    // Indicateur de fin de fichier
+    // Envoyer la fin de fichier
     const char *end_marker = "FIN_FICHIER\n";
-    if (send(client_fd, end_marker, strlen(end_marker), 0) == -1) {
-        perror("Erreur lors de l'envoi de l'indicateur de fin de fichier au serveur");
-    }
+    send(client_fd, end_marker, strlen(end_marker), 0);
 
     fclose(file);
     printf("Upload terminé.\n");

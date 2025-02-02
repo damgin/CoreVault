@@ -71,17 +71,18 @@ printf(
     if (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
-     // Vérifier si la commande commence par "upload_"
-    if (strncmp(buffer, "upload_", 7) == 0) {upload(client_fd,buffer);}
+        // Vérifier si la commande commence par "upload_"
+        if (strncmp(buffer, "upload_", 7) == 0) {upload(client_fd,buffer);}
 
 
 
         // Vérifier si la commande commence par "download_"
-    else if (strncmp(buffer, "download_", 9) == 0) { download(client_fd,buffer);}
+        else if (strncmp(buffer, "download_", 9) == 0) { download(client_fd,buffer);}
 
 
         // Commande 'list'
         else if (strncmp(buffer, "list", 4) == 0) {list(client_fd,buffer);
+        
         // en cas de couille
         } else {printf("Erreur lors de la lecture de la commande.\n");}
             close(client_fd);

@@ -5,19 +5,19 @@
 #define BUFSIZ 255
 
 #define CLIENT_PORT 8010
-#define SERVER_PORT 3005
+#define SERVER_PORT 3014
 
 #define GLOBAL_H
 
 
 
+#include <dirent.h> // Pour lister les fichiers
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <dirent.h> // Pour lister les fichiers
 #include <fcntl.h>  // Pour manipuler les fichiers
 #include <sys/stat.h> // Pour les fichiers
 #include "fonction.c"

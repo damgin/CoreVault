@@ -60,133 +60,13 @@ char buf[255];
     if(data_recus < 0){perror("erreur de receptions des données, c con :/");close(client_fd);}
 
     //on regarde ce que le client envoie :
-    
-    
-    
-    
-    
-    
-    
+
     ///si c'est LIST
-        if(strncmp(buf,"list",4) == 0){ 
-            char tampon[BUFFER_SIZE]; // Tampon pour capturer le printf
-            struct dirent *lecteur_dossier;
-            DIR * dir = opendir("public");
-                if (dir == 0) {perror("impossible d'ouvrir le dossier\n"); return 1;}
-
-                while ((lecteur_dossier = readdir(dir)) !=0){
-
-            // Vérification du type de fichier
-                    if (lecteur_dossier->d_type == DT_REG) {
-                        snprintf(tampon, sizeof(tampon), "FILE: %s\n", lecteur_dossier->d_name);
-                        printf("Tampon: %s", tampon); // Affichage pour débugg
-                            } else if (lecteur_dossier->d_type == DT_DIR) {
-                                snprintf(tampon, sizeof(tampon), "DIR: %s\n", lecteur_dossier->d_name);
-                                printf("Tampon: %s", tampon); // Affichage pour débugg
-                            }
-
-            
-            if (send(client_fd, tampon, strlen(tampon), 0) == -1) {
-                perror("Erreur d'envoi au client");
-                break;
-            }
-            }if(closedir(dir)== -1) { perror("impossible de fermer le dir\n"); return 1;}
-            // tentative d'envoie un "message fin de la liste"
-            const char *fin_liste = "FIN_LISTE\n";
-            if (send(client_fd, fin_liste, strlen(fin_liste), 0) == -1) {
-                perror("Erreur d'envoi de l'indicateur de fin au client");
-            }
-            return EXIT_SUCCESS;    
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        // ici on ce fait le download
-    if (strncmp(buf, "download_", 9) == 0) {
-        char *nom_fichier = buf + 9; // Nom du fichier
-        char chemin_acces_fichier[BUFFER_SIZE];
-        snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
-
-        // Ouverture du fichier en lecture       O_RDONLY = lecteur seul
-        int file_fd = open(chemin_acces_fichier, O_RDONLY); //pour lire mon char. open renvoie un descripteur de fichier.
-        if (file_fd < 0) {
-            perror("Erreur d'ouverture du fichier");
-            char *erreur_msg = "ERREUR: Fichier introuvable\n";
-            send(client_fd, erreur_msg, strlen(erreur_msg), 0);
-        } else {
-            char buf_fichier[BUFFER_SIZE];
-            ssize_t donnees_lues;
-        
-            // Envoi du contenu du fichier au client
-            while ((donnees_lues = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
-            
-                if (send(client_fd, buf_fichier, donnees_lues, 0) == -1) {
-                    perror("Erreur d'envoi du fichier");
-                    break;
-                }
-            }
-
-            if (donnees_lues < 0) perror("Erreur de lecture du fichier");
-
-            close(file_fd);
-
-            // Indicateur de fin de fichier
-            const char *fin_transfert = "FIN_FICHIER\n";
-            send(client_fd, fin_transfert, strlen(fin_transfert), 0);
-        }
-    close(client_fd);
-    return EXIT_SUCCESS;
-    }
-
-
-
-
-
-
-// Si la commande commence par "upload_"
-if (strncmp(buf, "upload_", 7) == 0) {
-
-
-    char *nom_fichier = buf + 7; // Nom du fichier
-    char chemin_acces_fichier[BUFFER_SIZE];
-    snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", nom_fichier); // Chemin du fichier
-
-    // Ouvrir le fichier en écriture (crée ou écrasement)
-    FILE *file = fopen(chemin_acces_fichier, "wb");
-    if (!file) {
-        perror("Erreur d'ouverture du fichier pour l'upload");
-        char *erreur_msg = "ERREUR: Impossible de créer le fichier\n";
-        send(client_fd, erreur_msg, strlen(erreur_msg), 0);
-    } else {
-        char buf_fichier[BUFFER_SIZE];
-        ssize_t donne_recue;
-
-        // on recoit les oct en boucles
-        while ((donne_recue = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
-
-            // comme pour dwl si le client a envoyé le marqueur de fin de fichier
-            if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {
-                // On enlève "FIN_FICHIER" du contenu reçu
-                fseek(file, -strlen("FIN_FICHIER"), SEEK_CUR);
-                break;
-            }
-            fwrite(buf_fichier, 1, donne_recue, file);
-        }
-
-        if (donne_recue < 0) {
-            perror("Erreur lors de la réception du fichier");
-        }
-
-        fclose(file);
-        printf("Upload terminé : %s\n", chemin_acces_fichier);
-    }
+    if(strncmp(buf,"list",4) == 0){ printf("ln71 server.c\n");list_file(client_fd);};
+    // ici on ce fait le download
+    if (strncmp(buf, "download_", 9) == 0) {download(client_fd, buf + 9);}
+    // Si la commande commence par "upload_"
+    if (strncmp(buf, "upload_", 7) == 0) { upload(client_fd, buf + 7);}
 
     close(client_fd);
     return EXIT_SUCCESS;
@@ -195,7 +75,7 @@ if (strncmp(buf, "upload_", 7) == 0) {
 
 
 
-}
+
 
 
 
