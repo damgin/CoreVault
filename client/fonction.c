@@ -24,11 +24,11 @@ char *file_name = user_input + 9;
     }
 
     printf("Téléchargement du fichier : %s\n", file_name);
-    // char* donner_total = recv (donne_lue)
+    // char* données_totales = recv (données_lues)
     while ((data_recv = recv(client_fd, file_buffer, sizeof(file_buffer), 0)) > 0) {
         // Vérifier la fin du fichier
 
-        //Strstr renvoie un pointeur sur le début de la sous chaine ou 0 si il la trouve pas, bonne chance pour coder ca
+        //Strstr renvoie un pointeur sur le début de la sous chaine ou 0 s'il ne la trouve pas, bonne chance pour coder ca
         if (strstr(file_buffer, "FIN_FICHIER") != NULL) {   ///si je trouve pas la sous chaine je continue a fwrite ! gg :!
             fwrite(file_buffer, 1, data_recv - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
             break;
@@ -98,12 +98,12 @@ void list(int client_fd,char*user_input){
     printf("Liste des fichiers et répertoires :\n");
 
         while ((data_recv = recv(client_fd, buf, sizeof(buf) - 1, 0)) > 0) {
-            buf[data_recv] = '\0'; // Assurez-vous que c'est une chaîne C valide
+            buf[data_recv] = '\0';
             printf("%s", buf);
 
                 // Vérifier si le serveur indique la fin de la liste
-                if (strstr(buf, "FIN_LISTE") != NULL) {//// aregarder 
-                    break; // enfin la  fin de la liste
+                if (strstr(buf, "FIN_LISTE") != NULL) {//// à regarder 
+                    break; // enfin la fin de la liste
                 }
         }
 

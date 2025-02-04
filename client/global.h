@@ -1,4 +1,4 @@
-///#ifndef GLOBAL_H /// a voir avec massi, nouvelle facon d'include 1 seule fois global.h
+///#ifndef GLOBAL_H /// à voir avec massi, nouvelle facon d'include 1 seule fois global.h
 
 #define BUFFER_SIZE 1024
 

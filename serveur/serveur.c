@@ -1,7 +1,5 @@
 #include "global.h"
 
-
-
 int main(){
 char buf[255];
 
@@ -56,7 +54,7 @@ char buf[255];
     //on récv la data du client
     int data_recus = 0;
     data_recus = recv(client_fd,buf,sizeof(buf),0);perror("reception des données");
-    //on gere les erreurs:
+    //on gère les erreurs:
     if(data_recus < 0){perror("erreur de receptions des données, c con :/");close(client_fd);}
 
     //on regarde ce que le client envoie :

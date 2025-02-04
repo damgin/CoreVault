@@ -51,7 +51,7 @@ printf(
         "  ╚██████  ╚██████╔╝██║ ██  ███████╗    ╚██████╔╝██║  ██║╚██████╔╝███████╗   ██║   \n"
         "   ╚═════╝  ╚═════╝ ╚═╝ ╚═╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   \n"
         "\n"
-        "  Bienvenue sur Core Vault - Votre plateforme sécurisée de stockage en ligne.\n"
+        "  Bienvenue sur Core Vault - Votre plateforme 'sécurisée*' de stockage en ligne.\n"
         "\n"
         "  [1] Créer un compte\n"
         "  [2] Se connecter\n"
@@ -64,11 +64,10 @@ printf(
     
     //buffer pour stocker ma commande 
     char buffer[BUFFER_SIZE];memset(buffer, 0, BUFFER_SIZE);
- 
-    
+     
     printf("Entrez une commande (upload_<nom_du_fichier>, download_<nom_du_fichier>, list) : ");
 
-    if (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
+    if(fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
         // Vérifier si la commande commence par "upload_"
@@ -82,7 +81,7 @@ printf(
         
        
         
-        // en cas de couille
+        // en cas de péping
         } else {printf("Erreur lors de la lecture de la commande.\n");}
             close(client_fd);
             return EXIT_SUCCESS;

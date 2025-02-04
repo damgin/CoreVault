@@ -37,6 +37,7 @@
     }
 
     void list_file(int client_fd) {
+        
         char tampon[BUFFER_SIZE]; // Tampon pour stocker les données à envoyer
         struct dirent *lecteur_dossier;
         
@@ -58,7 +59,7 @@
                 snprintf(tampon, sizeof(tampon), "DIR: %s\n", lecteur_dossier->d_name);
 
             } else {
-                continue; // Ignore les autres types de fichiers (liens symboliques, etc.)
+                continue; 
             }
 
             printf("Tampon: %s", tampon);
@@ -99,13 +100,13 @@
 
     printf("Réception du fichier : %s\n", chemin_acces_fichier);
 
-    // Lire et écrire les données reçu dans le fichier
+    // Lire et écrire les données reçues dans le fichier
     while ((donne_recue = recv(client_fd, buf_fichier, sizeof(buf_fichier), 0)) > 0) {
         // comme pour dwl si le client a envoyé le marqueur de fin de fichier
             if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {
                 // On enlève "FIN_FICHIER" du contenu reçu
                //// vérifier l'utilisation de "memset"
-            fwrite(buf_fichier, 1, donne_recue - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
+            fwrite(buf_fichier, 1, donne_recue - strlen("FIN_FICHIER"), file); // on supprime la sous-chaine pour éviter les soucis
             break;
         }
         
