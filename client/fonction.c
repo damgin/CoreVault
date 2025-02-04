@@ -87,7 +87,7 @@ void list(int client_fd,char*user_input){
     printf("Commande 'list' envoyée au serveur.\n");
 
     // Envoyer la string "list" au serveur
-        if (send(client_fd, user_input, strlen(user_input), 0) < 0) {
+        if (send(client_fd, user_input, sizeof(user_input), 0) < 0) {
             perror("Erreur lors de l'envoi de la commande au serveur");
             return ;
         }
