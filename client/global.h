@@ -2,7 +2,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define CLIENT_PORT 8013
+#define CLIENT_PORT 8018
 #define SERVER_PORT 3014
 
 #define GLOBAL_H

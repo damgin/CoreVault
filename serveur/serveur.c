@@ -60,17 +60,21 @@ char buf[255];
     if(data_recus < 0){perror("erreur de receptions des données, c con :/");close(client_fd);}
 
     //on regarde ce que le client envoie :
-
+    
     ///si c'est LIST
-    if(strncmp(buf,"list",4) == 0){ printf("ln71 server.c\n");list_file(client_fd);};
+    if(strncmp(buf,"list",4) == 0){;list_file(client_fd);};
     // ici on ce fait le download
     if (strncmp(buf, "download_", 9) == 0) {download(client_fd, buf + 9);}
     // Si la commande commence par "upload_"
     if (strncmp(buf, "upload_", 7) == 0) { upload(client_fd, buf + 7);}
+    // Si la commande commence par "break"
+    
+
 
     close(client_fd);
     return EXIT_SUCCESS;
-}
+
+    }
 
 
 

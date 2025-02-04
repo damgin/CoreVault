@@ -76,7 +76,7 @@ void upload(int client_fd,char*user_input){
     }
 
     // Envoyer la fin de fichier
-    const char *end_marker = "FIN_FICHIER\n";
+    const char *end_marker = "FIN_FICHIER";
     send(client_fd, end_marker, strlen(end_marker), 0);
 
     fclose(file);

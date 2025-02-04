@@ -3,38 +3,38 @@
 
 
     void download(int client_fd, const char *filename) {
-    char chemin_acces_fichier[BUFFER_SIZE];
-    snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", filename); // Chemin du fichier
+        char chemin_acces_fichier[BUFFER_SIZE];
+        snprintf(chemin_acces_fichier, sizeof(chemin_acces_fichier), "public/%s", filename); // Chemin du fichier
 
-    // Ouverture du fichier en lecture seule
-    int file_fd = open(chemin_acces_fichier, O_RDONLY);
-    if (file_fd < 0) {
-        perror("Erreur d'ouverture du fichier");
-        char *erreur_msg = "ERREUR: Fichier introuvable\n";
-        send(client_fd, erreur_msg, strlen(erreur_msg), 0);
-    } else {
-        char buf_fichier[BUFFER_SIZE];
-        ssize_t donnees_lues;
+        // Ouverture du fichier en lecture seule
+        int file_fd = open(chemin_acces_fichier, O_RDONLY);
+        if (file_fd < 0) {
+            perror("Erreur d'ouverture du fichier");
+            char *erreur_msg = "ERREUR: Fichier introuvable\n";
+            send(client_fd, erreur_msg, strlen(erreur_msg), 0);
+        } else {
+            char buf_fichier[BUFFER_SIZE];
+            ssize_t donnees_lues;
 
-        // Envoi du contenu du fichier au client
-        while ((donnees_lues = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
-            if (send(client_fd, buf_fichier, donnees_lues, 0) == -1) {
-                perror("Erreur d'envoi du fichier");
-                break;
+            // Envoi du contenu du fichier au client
+            while ((donnees_lues = read(file_fd, buf_fichier, sizeof(buf_fichier))) > 0) {
+                if (send(client_fd, buf_fichier, donnees_lues, 0) == -1) {
+                    perror("Erreur d'envoi du fichier");
+                    break;
+                }
             }
+
+            if (donnees_lues < 0) perror("Erreur de lecture du fichier");
+
+            close(file_fd);
+
+            // Indicateur de fin de fichier
+            const char *fin_transfert = "FIN_FICHIER";
+            send(client_fd, fin_transfert, strlen(fin_transfert), 0);
         }
 
-        if (donnees_lues < 0) perror("Erreur de lecture du fichier");
-
-        close(file_fd);
-
-        // Indicateur de fin de fichier
-        const char *fin_transfert = "FIN_FICHIER\n";
-        send(client_fd, fin_transfert, strlen(fin_transfert), 0);
+        close(client_fd);
     }
-
-    close(client_fd);
-}
 
     void list_file(int client_fd) {
         char tampon[BUFFER_SIZE]; // Tampon pour stocker les données à envoyer
@@ -53,8 +53,10 @@
 
             if (lecteur_dossier->d_type == DT_REG) {
                 snprintf(tampon, sizeof(tampon), "FILE: %s\n", lecteur_dossier->d_name);
+
             } else if (lecteur_dossier->d_type == DT_DIR) {
                 snprintf(tampon, sizeof(tampon), "DIR: %s\n", lecteur_dossier->d_name);
+
             } else {
                 continue; // Ignore les autres types de fichiers (liens symboliques, etc.)
             }
@@ -102,13 +104,14 @@
         // comme pour dwl si le client a envoyé le marqueur de fin de fichier
             if (strstr(buf_fichier, "FIN_FICHIER") != NULL) {
                 // On enlève "FIN_FICHIER" du contenu reçu
-               
+               //// vérifier l'utilisation de "memset"
             fwrite(buf_fichier, 1, donne_recue - strlen("FIN_FICHIER"), file); // on supprime la sous chaine pour éviter les soucis
             break;
         }
+        
             
-            fwrite(buf_fichier, 1, donne_recue, file);
-        }
+        fwrite(buf_fichier, 1, donne_recue, file);
+    }
 
     if (donne_recue < 0) {
         perror("Erreur lors de la réception du fichier");

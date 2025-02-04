@@ -65,7 +65,7 @@ printf(
     //buffer pour stocker ma commande 
     char buffer[BUFFER_SIZE];memset(buffer, 0, BUFFER_SIZE);
  
-
+    
     printf("Entrez une commande (upload_<nom_du_fichier>, download_<nom_du_fichier>, list) : ");
 
     if (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
@@ -74,18 +74,18 @@ printf(
         // Vérifier si la commande commence par "upload_"
         if (strncmp(buffer, "upload_", 7) == 0) {upload(client_fd,buffer);}
 
-
-
         // Vérifier si la commande commence par "download_"
         else if (strncmp(buffer, "download_", 9) == 0) { download(client_fd,buffer);}
 
-
         // Commande 'list'
-        else if (strncmp(buffer, "list", 4) == 0) {list(client_fd,buffer);
+        else if (strncmp(buffer, "list", 4) == 0) {list(client_fd,buffer);}
+        
+       
         
         // en cas de couille
         } else {printf("Erreur lors de la lecture de la commande.\n");}
             close(client_fd);
             return EXIT_SUCCESS;
-        }
 }
+    
+
